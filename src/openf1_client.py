@@ -35,8 +35,8 @@ class OpenF1Client:
             time.sleep(self.min_interval - elapsed)
         self._last_request = time.monotonic()
 
-    def get(self, endpoint, **params):
-        """Query an endpoint and return the result as a DataFrame."""
+    def get_json(self, endpoint, **params):
+        """Query an endpoint and return the records exactly as sent by the API."""
         url = f"{BASE_URL}/{endpoint}"
 
         for attempt in range(1, self.max_retries + 1):
@@ -48,10 +48,10 @@ class OpenF1Client:
                 problem = f"network error ({exc.__class__.__name__})"
             else:
                 if response.status_code == 200:
-                    return pd.DataFrame(response.json())
+                    return response.json()
                 if response.status_code == 404:
                     # No data for this query (e.g. a race without pit stops)
-                    return pd.DataFrame()
+                    return []
                 if response.status_code == 401:
                     raise LiveSessionLockError(
                         "OpenF1 is locked during a live session. "
@@ -70,6 +70,10 @@ class OpenF1Client:
             time.sleep(delay)
 
         raise RuntimeError(f"/{endpoint} did not respond after {self.max_retries} attempts")
+
+    def get(self, endpoint, **params):
+        """Query an endpoint and return the result as a DataFrame."""
+        return pd.DataFrame(self.get_json(endpoint, **params))
 
 
 if __name__ == "__main__":
