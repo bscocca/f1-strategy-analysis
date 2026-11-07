@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Progetto f1-strategy-analysis
+data/
+cache/
+.vscode/
+.DS_Store
