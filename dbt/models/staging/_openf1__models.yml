@@ -19,3 +19,19 @@ models:
           - accepted_values:
               arguments:
                 values: ["SOFT", "MEDIUM", "HARD", "INTERMEDIATE", "WET"]
+
+  - name: stg_openf1__laps
+    description: One row per driver and lap, with times in seconds and speeds in km/h.
+    columns:
+      - name: lap_id
+        description: Surrogate key built from session_key, driver_number and lap_number.
+        data_tests:
+          - unique
+          - not_null
+      - name: session_key
+        data_tests:
+          - not_null
+      - name: lap_time_s
+        description: Lap time in seconds. Null for laps that were not completed (e.g. retirements).
+      - name: is_pit_out_lap
+        description: True for the lap leaving the pit lane.
