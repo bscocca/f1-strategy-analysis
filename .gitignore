@@ -224,3 +224,9 @@ data/
 cache/
 .vscode/
 .DS_Store
+
+# dbt
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml
