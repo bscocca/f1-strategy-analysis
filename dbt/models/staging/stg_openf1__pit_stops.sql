@@ -15,7 +15,7 @@ renamed as (
         cast(driver_number as integer) as driver_number,
         -- The lap on which the driver entered the pit lane (in-lap)
         cast(lap_number as integer) as lap_number,
-        cast(date as timestamptz) as pit_entered_at,
+        {{ to_utc_timestamp('date') }} as pit_entered_at,
 
         -- lane_duration replaced pit_duration (removed at the end of 2026):
         -- older records may only have the old name

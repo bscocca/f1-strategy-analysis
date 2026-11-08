@@ -14,7 +14,7 @@ renamed as (
         cast(meeting_key as integer) as meeting_key,
         cast(driver_number as integer) as driver_number,
         cast(lap_number as integer) as lap_number,
-        cast(date_start as timestamptz) as lap_started_at,
+        {{ to_utc_timestamp('date_start') }} as lap_started_at,
 
         -- Times in seconds, speeds in km/h
         cast(lap_duration as double) as lap_time_s,

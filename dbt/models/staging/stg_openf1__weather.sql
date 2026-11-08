@@ -12,7 +12,7 @@ renamed as (
 
         cast(session_key as integer) as session_key,
         cast(meeting_key as integer) as meeting_key,
-        cast(date as timestamptz) as measured_at,
+        {{ to_utc_timestamp('date') }} as measured_at,
 
         cast(air_temperature as double) as air_temp_c,
         cast(track_temperature as double) as track_temp_c,

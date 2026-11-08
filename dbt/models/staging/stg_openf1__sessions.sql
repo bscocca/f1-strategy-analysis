@@ -17,8 +17,8 @@ renamed as (
         country_name,
         country_code,
 
-        cast(date_start as timestamptz) as race_started_at,
-        cast(date_end as timestamptz) as race_ended_at,
+        {{ to_utc_timestamp('date_start') }} as race_started_at,
+        {{ to_utc_timestamp('date_end') }} as race_ended_at,
 
         coalesce(cast(is_cancelled as boolean), false) as is_cancelled
 
