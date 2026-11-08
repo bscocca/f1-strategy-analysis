@@ -1,0 +1,14 @@
+name: f1_strategy
+version: "1.0.0"
+profile: f1_strategy
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+models:
+  f1_strategy:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

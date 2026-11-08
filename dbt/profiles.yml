@@ -1,0 +1,7 @@
+f1_strategy:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ../data/f1.duckdb
+      threads: 4

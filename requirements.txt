@@ -1,5 +1,6 @@
 requests
 pandas
 pyarrow
-duckdb
+duckdb>=1.4,<2
 ipykernel
+dbt
