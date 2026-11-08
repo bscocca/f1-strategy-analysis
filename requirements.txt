@@ -1,6 +1,9 @@
 requests
 pandas
 pyarrow
+# Must stay on 1.x: dbt 2 bundles DuckDB 1.x and cannot read files written by DuckDB 2
 duckdb>=1.4,<2
 ipykernel
 dbt
+matplotlib
+seaborn
