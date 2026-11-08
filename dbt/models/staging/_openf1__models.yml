@@ -1,4 +1,23 @@
 models:
+  - name: stg_openf1__sessions
+    description: One row per race in the calendar, including cancelled and future races.
+    columns:
+      - name: session_key
+        data_tests:
+          - unique
+          - not_null
+      - name: season
+        data_tests:
+          - not_null
+      - name: circuit_name
+        description: Short name of the circuit (e.g. Monza, Silverstone).
+        data_tests:
+          - not_null
+      - name: is_cancelled
+        description: True if the race was cancelled. Never null.
+        data_tests:
+          - not_null
+
   - name: stg_openf1__stints
     description: One row per driver and stint, with clean types and missing compounds as null.
     columns:
