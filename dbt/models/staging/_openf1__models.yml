@@ -123,3 +123,22 @@ models:
         description: Track surface temperature in degrees Celsius.
       - name: is_raining
         description: True if rainfall was detected at the time of the reading.
+
+  - name: stg_openf1__session_results
+    description: Final classification of each race, one row per driver.
+    columns:
+      - name: race_driver_id
+        description: Surrogate key built from session_key and driver_number.
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_openf1__drivers')
+                field: race_driver_id
+      - name: race_time_s
+        description: Total race time in seconds.
+      - name: gap_to_winner_s
+        description: Gap to the winner in seconds. Null for lapped drivers and retirements.
+      - name: laps_behind
+        description: Laps behind the winner for lapped drivers. Null otherwise.
