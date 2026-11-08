@@ -35,3 +35,20 @@ models:
         description: Lap time in seconds. Null for laps that were not completed (e.g. retirements).
       - name: is_pit_out_lap
         description: True for the lap leaving the pit lane.
+
+  - name: stg_openf1__pit_stops
+    description: One row per pit lane passage, with or without a tyre change.
+    columns:
+      - name: pit_stop_id
+        description: Surrogate key built from session_key, driver_number and lap_number.
+        data_tests:
+          - unique
+          - not_null
+      - name: lap_number
+        description: Lap on which the driver entered the pit lane (in-lap).
+        data_tests:
+          - not_null
+      - name: pit_lane_time_s
+        description: Total time spent in the pit lane, in seconds.
+      - name: stop_time_s
+        description: Stationary time in seconds. Available only from the 2024 US Grand Prix onwards.
