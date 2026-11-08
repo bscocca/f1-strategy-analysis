@@ -89,3 +89,24 @@ models:
         description: Total time spent in the pit lane, in seconds.
       - name: stop_time_s
         description: Stationary time in seconds. Available only from the 2024 US Grand Prix onwards.
+
+  - name: stg_openf1__race_control
+    description: >
+      Race control messages: session status, flags, safety car, investigations
+      and penalties. No natural key: several messages can share the same time.
+    columns:
+      - name: session_key
+        data_tests:
+          - not_null
+      - name: message_at
+        data_tests:
+          - not_null
+      - name: driver_number
+        description: >
+          Driver the message refers to. Often null for penalties, where the car
+          number is only in the message text.
+      - name: category
+        description: Type of message (Flag, SafetyCar, Other, ...).
+      - name: message
+        data_tests:
+          - not_null
