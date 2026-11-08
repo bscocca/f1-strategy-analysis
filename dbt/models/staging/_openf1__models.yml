@@ -110,3 +110,16 @@ models:
       - name: message
         data_tests:
           - not_null
+
+  - name: stg_openf1__weather
+    description: Weather at the track, about one reading per minute during each race.
+    columns:
+      - name: weather_reading_id
+        description: Surrogate key built from session_key and the reading timestamp.
+        data_tests:
+          - unique
+          - not_null
+      - name: track_temp_c
+        description: Track surface temperature in degrees Celsius.
+      - name: is_raining
+        description: True if rainfall was detected at the time of the reading.
