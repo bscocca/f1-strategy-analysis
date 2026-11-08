@@ -18,6 +18,24 @@ models:
         data_tests:
           - not_null
 
+  - name: stg_openf1__drivers
+    description: One row per race and driver, with team and team colour.
+    columns:
+      - name: race_driver_id
+        description: Surrogate key built from session_key and driver_number.
+        data_tests:
+          - unique
+          - not_null
+      - name: driver_code
+        description: Three-letter code of the driver (e.g. VER, LEC). Stable across seasons.
+        data_tests:
+          - not_null
+      - name: team_name
+        data_tests:
+          - not_null
+      - name: team_colour
+        description: Team colour as a hex string with leading # (e.g. #ED1131).
+
   - name: stg_openf1__stints
     description: One row per driver and stint, with clean types and missing compounds as null.
     columns:
