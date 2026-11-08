@@ -20,6 +20,10 @@ sessions as (
     select * from {{ ref('stg_openf1__sessions') }}
 ),
 
+neutralised_laps as (
+    select * from {{ ref('int_neutralised_laps') }}
+),
+
 laps_with_tyres as (
 
     -- A lap belongs to the stint whose lap range contains it
@@ -44,7 +48,7 @@ laps_with_tyres as (
 
 ),
 
-final as (
+joined as (
 
     select
         laps.lap_id,
@@ -80,7 +84,10 @@ final as (
         laps.lap_number = 1 as is_first_lap,
         coalesce(laps.is_pit_out_lap, false) as is_pit_out_lap,
         -- The pit table records the lap on which the driver entered the pit lane
-        pit_stops.pit_stop_id is not null as is_pit_in_lap
+        pit_stops.pit_stop_id is not null as is_pit_in_lap,
+        -- SC, VSC or RED; null when the lap was run under green flag
+        neutralised_laps.neutralisation,
+        neutralised_laps.neutralised_lap_id is not null as is_neutralised
 
     from laps_with_tyres as laps
     inner join sessions
@@ -92,6 +99,25 @@ final as (
         on laps.session_key = pit_stops.session_key
         and laps.driver_number = pit_stops.driver_number
         and laps.lap_number = pit_stops.lap_number
+    left join neutralised_laps
+        on laps.session_key = neutralised_laps.session_key
+        and laps.lap_number = neutralised_laps.lap_number
+
+),
+
+final as (
+
+    select
+        *,
+        -- A lap that reflects race pace: completed, under green flag,
+        -- not the standing start and not affected by a pit stop
+        lap_time_s is not null
+            and not is_first_lap
+            and not is_pit_out_lap
+            and not is_pit_in_lap
+            and not is_neutralised
+            as is_representative_lap
+    from joined
 
 )
 

@@ -28,3 +28,23 @@ models:
         description: True for the lap leaving the pit lane.
       - name: is_pit_in_lap
         description: True for the lap entering the pit lane, with or without a tyre change.
+      - name: neutralisation
+        description: >
+          SC, VSC or RED if the lap was run under safety car, virtual safety car
+          or red flag conditions; null under green flag. Based on the leader's
+          lap, so it can be off by one lap for lapped drivers.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["SC", "VSC", "RED"]
+      - name: is_neutralised
+        description: True if neutralisation is not null.
+        data_tests:
+          - not_null
+      - name: is_representative_lap
+        description: >
+          True for laps that reflect race pace: completed, under green flag,
+          not lap 1, and neither a pit entry nor a pit exit lap. Use it as the
+          default filter for pace and tyre degradation analysis.
+        data_tests:
+          - not_null
