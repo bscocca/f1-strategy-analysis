@@ -1,0 +1,20 @@
+models:
+  - name: int_neutralised_laps
+    description: >
+      One row per race and leader lap run under safety car (SC), virtual
+      safety car (VSC) or red flag (RED) conditions, derived from race control
+      messages. Lap numbers are the race leader's: for lapped drivers the
+      flag can be off by one lap.
+    columns:
+      - name: neutralised_lap_id
+        description: Surrogate key built from session_key and lap_number.
+        data_tests:
+          - unique
+          - not_null
+      - name: neutralisation
+        description: Most severe neutralisation on the lap (RED, then SC, then VSC).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["SC", "VSC", "RED"]

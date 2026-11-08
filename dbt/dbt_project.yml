@@ -10,5 +10,7 @@ models:
   f1_strategy:
     staging:
       +materialized: view
+    intermediate:
+      +materialized: view
     marts:
       +materialized: table
