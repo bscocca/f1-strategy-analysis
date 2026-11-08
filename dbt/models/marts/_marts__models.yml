@@ -1,0 +1,30 @@
+models:
+  - name: fct_laps
+    description: >
+      One row per driver and lap across all races, with race, driver, team and
+      tyre context, and flags to exclude laps that do not reflect race pace.
+    columns:
+      - name: lap_id
+        data_tests:
+          - unique
+          - not_null
+      - name: season
+        data_tests:
+          - not_null
+      - name: driver_code
+        data_tests:
+          - not_null
+      - name: compound
+        description: Tyre compound used on the lap. Null if not recorded or if the lap has no stint.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["SOFT", "MEDIUM", "HARD", "INTERMEDIATE", "WET"]
+      - name: tyre_age_laps
+        description: Laps already completed on the tyre set at the start of this lap.
+      - name: is_first_lap
+        description: True for lap 1, which includes the standing start.
+      - name: is_pit_out_lap
+        description: True for the lap leaving the pit lane.
+      - name: is_pit_in_lap
+        description: True for the lap entering the pit lane, with or without a tyre change.
