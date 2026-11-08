@@ -1,0 +1,58 @@
+sources:
+  - name: openf1
+    description: Raw Formula 1 data from the OpenF1 API, loaded by src/load.py.
+    schema: main
+    tables:
+      - name: raw_sessions
+        description: One row per race in the calendar, including cancelled and future races.
+        columns:
+          - name: session_key
+            description: Unique identifier of the race session.
+            data_tests:
+              - unique
+              - not_null
+
+      - name: raw_laps
+        description: One row per driver and lap.
+        columns:
+          - name: session_key
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('openf1', 'raw_sessions')
+                    field: session_key
+          - name: driver_number
+            data_tests:
+              - not_null
+          - name: lap_number
+            data_tests:
+              - not_null
+
+      - name: raw_stints
+        description: One row per driver and stint (period on the same set of tyres).
+        columns:
+          - name: compound
+            description: >
+              Tyre compound. UNKNOWN appears in a few very short stints
+              (1-2 laps, e.g. retirements on the first lap) where the compound
+              was not recorded; it is converted to null in staging.
+            data_tests:
+              - accepted_values:
+                  arguments:
+                    values: ["SOFT", "MEDIUM", "HARD", "INTERMEDIATE", "WET", "UNKNOWN"]
+
+      - name: raw_pit
+        description: One row per pit lane passage.
+
+      - name: raw_race_control
+        description: Race control messages (flags, safety car, penalties).
+
+      - name: raw_drivers
+        description: One row per driver and race, with team and team colour.
+
+      - name: raw_weather
+        description: Weather at the track, about one reading per minute.
+
+      - name: raw_session_result
+        description: Final classification of each race.
