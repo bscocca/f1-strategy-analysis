@@ -12,6 +12,7 @@ pages = [
     st.Page("views/home.py", title="Home", default=True),
     st.Page("views/degradation.py", title="Tyre degradation"),
     st.Page("views/undercut.py", title="Undercut calculator"),
+    st.Page("views/race_explorer.py", title="Race explorer"),
 ]
 
 st.navigation(pages).run()
