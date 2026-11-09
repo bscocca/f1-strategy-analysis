@@ -1,0 +1,46 @@
+version: 2
+
+exposures:
+  - name: f1_strategy_explorer
+    label: F1 Strategy Explorer
+    type: application
+    maturity: high
+    url: https://f1-strategy-explorer.streamlit.app/
+    description: >
+      Streamlit app with tyre degradation by circuit, an undercut calculator
+      and a race explorer. It reads the laps exported from fct_laps by
+      src/export_app_data.py, together with the results of the degradation
+      and undercut notebooks.
+    depends_on:
+      - ref('fct_laps')
+    owner:
+      name: Bernadette Scocca
+
+  - name: tyre_degradation_analysis
+    label: Tyre degradation analysis
+    type: analysis
+    maturity: high
+    url: https://github.com/bscocca/f1-strategy-analysis/blob/main/notebooks/03_tyre_degradation.ipynb
+    description: >
+      Notebook 03: degradation of each compound per lap of tyre age, estimated
+      race by race with a regression on representative laps, and the
+      comparison between the 2026 regulations and 2023-2025.
+    depends_on:
+      - ref('fct_laps')
+    owner:
+      name: Bernadette Scocca
+
+  - name: undercut_analysis
+    label: Undercut analysis
+    type: analysis
+    maturity: high
+    url: https://github.com/bscocca/f1-strategy-analysis/blob/main/notebooks/04_undercut.ipynb
+    description: >
+      Notebook 04: undercut attempts rebuilt from lap start times, their
+      success rate and time gained, and a logistic model of success by
+      initial gap and tyre degradation.
+    depends_on:
+      - ref('fct_laps')
+      - ref('stg_openf1__pit_stops')
+    owner:
+      name: Bernadette Scocca
