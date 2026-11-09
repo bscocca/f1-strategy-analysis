@@ -1,0 +1,10 @@
+{
+  "formula": "success ~ gap_before_s + degradation_cs",
+  "degradation_unit": "hundredths of a second per lap",
+  "n_attempts": 166,
+  "params": {
+    "Intercept": 0.24690917533896165,
+    "gap_before_s": -1.069172946631761,
+    "degradation_cs": 0.1597562303367686
+  }
+}
