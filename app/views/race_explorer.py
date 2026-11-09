@@ -31,8 +31,16 @@ race_label = st.selectbox(
 )
 session_key = races.loc[races["label"] == race_label, "session_key"].iloc[0]
 
-race_laps = laps[laps["session_key"] == session_key].copy()
-race_laps["compound"] = race_laps["compound"].fillna("UNKNOWN")
+race_laps = (
+    laps[laps["session_key"] == session_key]
+    .sort_values(["driver_code", "lap_number"])
+    .copy()
+)
+# Laps not covered by any OpenF1 stint (usually the last lap or the lap of a
+# retirement) keep the compound of the driver's previous lap
+race_laps["compound"] = (
+    race_laps.groupby("driver_code")["compound"].ffill().fillna("UNKNOWN")
+)
 
 # Approximate finishing order: most laps completed first, then lowest total time
 finish = (
@@ -104,10 +112,17 @@ if selected_drivers:
 else:
     st.write("Select at least one driver to see the lap times.")
 
-# Tyre strategies of the whole field
+# Tyre strategies of the whole field.
+# Stints are rebuilt from the compound alone: OpenF1's stint number and pit-out
+# flag are inconsistent in some wet races (overlapping stints, pit-out laps
+# shifted by one lap), while the compound of each lap is reliable.
 st.subheader("Tyre strategies")
+previous_compound = race_laps.groupby("driver_code")["compound"].shift()
+starts_stint = race_laps["compound"] != previous_compound
+race_laps["stint"] = starts_stint.groupby(race_laps["driver_code"]).cumsum()
+
 stints = (
-    race_laps.groupby(["driver_code", "stint_number"])
+    race_laps.groupby(["driver_code", "stint"])
     .agg(
         compound=("compound", "first"),
         start_lap=("lap_number", "min"),
@@ -145,5 +160,5 @@ st.plotly_chart(strategy)
 st.caption(
     "Drivers are ordered by approximate finishing position: laps completed, then total "
     "race time. Shaded areas mark laps under safety car (SC), virtual safety car (VSC) "
-    "or red flag (RED)."
+    "or red flag (RED). Consecutive stints on the same compound appear as a single bar."
 )
