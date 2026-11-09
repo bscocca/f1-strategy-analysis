@@ -16,6 +16,23 @@ exposures:
     owner:
       name: Bernadette Scocca
 
+  - name: tableau_strategy_dashboard
+    label: Tableau strategy dashboard
+    type: dashboard
+    maturity: high
+    url: https://public.tableau.com/app/profile/bernadette.scocca/viz/f1_strategy_twbx/F1strategydashboard
+    description: >
+      Tableau Public dashboard for the strategy department: degradation by
+      circuit and compound, undercut attempts by initial gap and time gained,
+      and undercut success rate by race degradation, linked by a circuit
+      filter. It reads bi/f1_strategy.xlsx, built by src/export_bi_data.py
+      from the results of the degradation and undercut notebooks.
+    depends_on:
+      - ref('fct_laps')
+      - ref('stg_openf1__pit_stops')
+    owner:
+      name: Bernadette Scocca
+
   - name: tyre_degradation_analysis
     label: Tyre degradation analysis
     type: analysis
