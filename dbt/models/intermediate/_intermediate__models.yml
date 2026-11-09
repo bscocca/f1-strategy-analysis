@@ -5,11 +5,26 @@ models:
       safety car (VSC) or red flag (RED) conditions, derived from race control
       messages. Lap numbers are the race leader's: for lapped drivers the
       flag can be off by one lap.
+
+      Periods are rebuilt as follows. SC: from the deployment lap to the lap
+      after the IN THIS LAP message (the restart lap). VSC: from the
+      deployment lap to the ENDING lap. RED: from a RED flag or a SESSION
+      ABORTED message, since some 2026 races only sent the latter. A period
+      without a closing message ends at the start of the next period or at
+      the last lap of the race.
     columns:
       - name: neutralised_lap_id
         description: Surrogate key built from session_key and lap_number.
         data_tests:
           - unique
+          - not_null
+      - name: session_key
+        description: OpenF1 identifier of the race session.
+        data_tests:
+          - not_null
+      - name: lap_number
+        description: Leader's lap number run under the neutralisation.
+        data_tests:
           - not_null
       - name: neutralisation
         description: Most severe neutralisation on the lap (RED, then SC, then VSC).
