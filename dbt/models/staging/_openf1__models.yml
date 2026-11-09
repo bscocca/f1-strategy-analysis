@@ -3,16 +3,32 @@ models:
     description: One row per race in the calendar, including cancelled and future races.
     columns:
       - name: session_key
+        description: OpenF1 identifier of the race session.
         data_tests:
           - unique
           - not_null
+      - name: meeting_key
+        description: OpenF1 identifier of the Grand Prix weekend the session belongs to.
       - name: season
+        description: Championship year (renamed from year).
         data_tests:
           - not_null
+      - name: circuit_key
+        description: OpenF1 identifier of the circuit.
       - name: circuit_name
         description: Short name of the circuit (e.g. Monza, Silverstone).
         data_tests:
           - not_null
+      - name: location
+        description: City or area where the circuit is located.
+      - name: country_name
+        description: Country of the race.
+      - name: country_code
+        description: Three-letter code of the country (e.g. ITA, GBR).
+      - name: race_started_at
+        description: Scheduled start of the race, in UTC.
+      - name: race_ended_at
+        description: Scheduled end of the race session, in UTC.
       - name: is_cancelled
         description: True if the race was cancelled. Never null.
         data_tests:
@@ -26,11 +42,20 @@ models:
         data_tests:
           - unique
           - not_null
+      - name: session_key
+        description: OpenF1 identifier of the race session.
+      - name: meeting_key
+        description: OpenF1 identifier of the Grand Prix weekend.
+      - name: driver_number
+        description: Car number of the driver.
       - name: driver_code
         description: Three-letter code of the driver (e.g. VER, LEC). Stable across seasons.
         data_tests:
           - not_null
+      - name: driver_name
+        description: Full name of the driver, built from first and last name.
       - name: team_name
+        description: Name of the team in that race.
         data_tests:
           - not_null
       - name: team_colour
@@ -45,17 +70,31 @@ models:
           - unique
           - not_null
       - name: session_key
+        description: OpenF1 identifier of the race session.
         data_tests:
           - not_null
+      - name: meeting_key
+        description: OpenF1 identifier of the Grand Prix weekend.
       - name: driver_number
+        description: Car number of the driver.
         data_tests:
           - not_null
+      - name: stint_number
+        description: Number of the stint within the race, starting from 1.
+      - name: lap_start
+        description: First lap of the stint.
+      - name: lap_end
+        description: Last lap of the stint.
       - name: compound
-        description: Tyre compound, null when not recorded.
+        description: Tyre compound, null when not recorded (UNKNOWN in the source).
         data_tests:
           - accepted_values:
               arguments:
                 values: ["SOFT", "MEDIUM", "HARD", "INTERMEDIATE", "WET"]
+      - name: tyre_age_at_start
+        description: >
+          Laps already run on the tyre set at the start of the stint: zero for a
+          new set, more for a set used in earlier sessions or stints.
 
   - name: stg_openf1__laps
     description: One row per driver and lap, with times in seconds and speeds in km/h.
@@ -66,27 +105,66 @@ models:
           - unique
           - not_null
       - name: session_key
+        description: OpenF1 identifier of the race session.
         data_tests:
           - not_null
+      - name: meeting_key
+        description: OpenF1 identifier of the Grand Prix weekend.
+      - name: driver_number
+        description: Car number of the driver.
+        data_tests:
+          - not_null
+      - name: lap_number
+        description: Lap number within the race, starting from 1.
+        data_tests:
+          - not_null
+      - name: lap_started_at
+        description: Time the driver crossed the line to start the lap, in UTC. Approximate according to OpenF1.
       - name: lap_time_s
         description: Lap time in seconds. Null for laps that were not completed (e.g. retirements).
+      - name: sector_1_s
+        description: Time of the first sector, in seconds.
+      - name: sector_2_s
+        description: Time of the second sector, in seconds.
+      - name: sector_3_s
+        description: Time of the third sector, in seconds.
+      - name: speed_i1_kmh
+        description: Speed at the first intermediate measuring point, in km/h.
+      - name: speed_i2_kmh
+        description: Speed at the second intermediate measuring point, in km/h.
+      - name: speed_trap_kmh
+        description: Speed at the speed trap, in km/h.
       - name: is_pit_out_lap
         description: True for the lap leaving the pit lane.
 
   - name: stg_openf1__pit_stops
-    description: One row per pit lane passage, with or without a tyre change.
+    description: >
+      One row per pit lane passage, with or without a tyre change. OpenF1 has
+      no pit data for the first six races of 2023 and misses some passages in
+      other races: fct_laps also rebuilds pit entry laps from pit exit laps.
     columns:
       - name: pit_stop_id
         description: Surrogate key built from session_key, driver_number and lap_number.
         data_tests:
           - unique
           - not_null
+      - name: session_key
+        description: OpenF1 identifier of the race session.
+      - name: meeting_key
+        description: OpenF1 identifier of the Grand Prix weekend.
+      - name: driver_number
+        description: Car number of the driver.
       - name: lap_number
         description: Lap on which the driver entered the pit lane (in-lap).
         data_tests:
           - not_null
+      - name: pit_entered_at
+        description: Time the driver entered the pit lane, in UTC.
       - name: pit_lane_time_s
-        description: Total time spent in the pit lane, in seconds.
+        description: >
+          Total time spent in the pit lane, in seconds. Taken from lane_duration,
+          or from pit_duration, its older name, when lane_duration is missing.
+          Under a red flag it includes the whole wait in the pit lane.
       - name: stop_time_s
         description: Stationary time in seconds. Available only from the 2024 US Grand Prix onwards.
 
@@ -96,18 +174,34 @@ models:
       and penalties. No natural key: several messages can share the same time.
     columns:
       - name: session_key
+        description: OpenF1 identifier of the race session.
         data_tests:
           - not_null
+      - name: meeting_key
+        description: OpenF1 identifier of the Grand Prix weekend.
       - name: message_at
+        description: Time of the message, in UTC.
         data_tests:
           - not_null
+      - name: lap_number
+        description: Lap of the race leader when the message was sent.
       - name: driver_number
         description: >
           Driver the message refers to. Often null for penalties, where the car
           number is only in the message text.
       - name: category
-        description: Type of message (Flag, SafetyCar, Other, ...).
+        description: Type of message (Flag, SafetyCar, SessionStatus, Other, ...).
+      - name: flag
+        description: >
+          Flag shown, for flag messages (e.g. GREEN, YELLOW, DOUBLE YELLOW, RED,
+          BLUE, CLEAR, CHEQUERED). Some red flags in 2026 are only sent as a
+          SESSION ABORTED message without a flag.
+      - name: scope
+        description: Part of the track or field the message applies to (Track, Sector or Driver).
+      - name: sector
+        description: Marshalling sector the message applies to, when scope is Sector.
       - name: message
+        description: Full text of the message.
         data_tests:
           - not_null
 
@@ -119,8 +213,24 @@ models:
         data_tests:
           - unique
           - not_null
+      - name: session_key
+        description: OpenF1 identifier of the race session.
+      - name: meeting_key
+        description: OpenF1 identifier of the Grand Prix weekend.
+      - name: measured_at
+        description: Time of the reading, in UTC.
+      - name: air_temp_c
+        description: Air temperature in degrees Celsius.
       - name: track_temp_c
         description: Track surface temperature in degrees Celsius.
+      - name: humidity_pct
+        description: Relative humidity, in percent.
+      - name: pressure_mbar
+        description: Air pressure in millibar.
+      - name: wind_speed_ms
+        description: Wind speed in metres per second.
+      - name: wind_direction_deg
+        description: Wind direction in degrees, from 0 to 359.
       - name: is_raining
         description: True if rainfall was detected at the time of the reading.
 
@@ -136,9 +246,25 @@ models:
               arguments:
                 to: ref('stg_openf1__drivers')
                 field: race_driver_id
+      - name: session_key
+        description: OpenF1 identifier of the race session.
+      - name: meeting_key
+        description: OpenF1 identifier of the Grand Prix weekend.
+      - name: driver_number
+        description: Car number of the driver.
+      - name: finish_position
+        description: Final classified position.
+      - name: laps_completed
+        description: Number of laps completed by the driver.
       - name: race_time_s
         description: Total race time in seconds.
       - name: gap_to_winner_s
         description: Gap to the winner in seconds. Null for lapped drivers and retirements.
       - name: laps_behind
         description: Laps behind the winner for lapped drivers. Null otherwise.
+      - name: is_dnf
+        description: True if the driver did not finish the race.
+      - name: is_dns
+        description: True if the driver did not start the race.
+      - name: is_dsq
+        description: True if the driver was disqualified.
