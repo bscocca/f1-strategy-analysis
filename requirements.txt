@@ -8,3 +8,5 @@ dbt
 matplotlib
 seaborn
 statsmodels
+plotly
+streamlit
