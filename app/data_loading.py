@@ -35,6 +35,24 @@ def load_degradation() -> pd.DataFrame:
 
 
 @st.cache_data
+def load_circuit_degradation() -> pd.Series:
+    """Average degradation per circuit, in seconds per lap of tyre age.
+
+    Mean of the compounds estimated in each race, then mean of the races,
+    so that a race with three estimated compounds does not weigh more than
+    a race with one. Indexed by circuit name, sorted from lowest to highest.
+    """
+    return (
+        load_degradation()
+        .groupby(["circuit_name", "session_key"])["degradation_s_per_lap"]
+        .mean()
+        .groupby("circuit_name")
+        .mean()
+        .sort_values()
+    )
+
+
+@st.cache_data
 def load_undercut_attempts() -> pd.DataFrame:
     """Measured undercut attempts, from notebook 04."""
     return pd.read_parquet(DATA_DIR / "undercut_attempts.parquet")

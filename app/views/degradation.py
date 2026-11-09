@@ -3,7 +3,7 @@
 import plotly.express as px
 import streamlit as st
 
-from data_loading import load_degradation
+from data_loading import load_circuit_degradation, load_degradation
 
 COMPOUND_COLOURS = {"SOFT": "#DA291C", "MEDIUM": "#FFD12E", "HARD": "#A0A0A0"}
 COMPOUND_ORDER = ["SOFT", "MEDIUM", "HARD"]
@@ -72,14 +72,7 @@ st.plotly_chart(by_season)
 st.subheader("How it compares with other circuits")
 st.caption("Average over races of the mean degradation of the compounds estimated in each race.")
 
-by_circuit = (
-    degradation.groupby(["circuit_name", "session_key"])["degradation_s_per_lap"]
-    .mean()
-    .groupby("circuit_name")
-    .mean()
-    .sort_values()
-    .reset_index()
-)
+by_circuit = load_circuit_degradation().reset_index()
 by_circuit["selected"] = by_circuit["circuit_name"] == circuit
 
 ranking = px.bar(
