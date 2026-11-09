@@ -1,0 +1,7 @@
+# Dependencies of the Streamlit app only.
+# The full project (pipeline, dbt, notebooks) uses the requirements.txt in the root.
+streamlit>=1.40
+pandas
+numpy
+pyarrow
+plotly>=5.20
