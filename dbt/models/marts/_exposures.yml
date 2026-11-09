@@ -20,7 +20,7 @@ exposures:
     label: Tableau strategy dashboard
     type: dashboard
     maturity: high
-    url: https://public.tableau.com/app/profile/bernadette.scocca/viz/f1_strategy_twbx/F1strategydashboard
+    url: https://public.tableau.com/app/profile/bernadette.scocca/viz/F1StrategyTyreDegradationandtheUndercut/F1strategydashboard
     description: >
       Tableau Public dashboard for the strategy department: degradation by
       circuit and compound, undercut attempts by initial gap and time gained,
