@@ -10,6 +10,7 @@ st.set_page_config(page_title="F1 Strategy Explorer", layout="wide")
 
 pages = [
     st.Page("views/home.py", title="Home", default=True),
+    st.Page("views/degradation.py", title="Tyre degradation"),
 ]
 
 st.navigation(pages).run()
